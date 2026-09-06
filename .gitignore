@@ -39,3 +39,14 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# build outputs
+dist2/
+dist3/
+*.apk
+android/app/build/
+android/.cxx/
+android/build/
+.gradle/
+scripts/debug-pdf.ts
+02.pdf

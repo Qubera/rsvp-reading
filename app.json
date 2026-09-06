@@ -1,13 +1,17 @@
 {
   "expo": {
-    "name": "rsvp-reading",
+    "name": "RSVP Reading",
     "slug": "rsvp-reading",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Камера нужна для сканирования страниц (OCR).",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -16,10 +20,33 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.rsvpreading"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite",
+      "expo-font",
+      "expo-localization",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Камера нужна для сканирования страниц (OCR)."
+        }
+      ],
+      "expo-notifications"
+    ],
+    "backgroundColor": "#070B15",
+    "splash": {
+      "backgroundColor": "#070B15",
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain"
     }
   }
 }

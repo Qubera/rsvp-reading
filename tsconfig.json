@@ -2,5 +2,13 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist2",
+    "dist3",
+    ".expo",
+    "scripts"
+  ]
 }
