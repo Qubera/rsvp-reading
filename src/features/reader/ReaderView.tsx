@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
+import { Animated, PanResponder, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useTheme, UI_FONT_BOLD, UI_FONT_MEDIUM, UI_FONT_SEMIBOLD, READER_FONTS } from '../../ui/theme/ThemeProvider';
@@ -19,9 +19,12 @@ import { IconButton } from '../../ui/components';
 
 export function ReaderView({
   fullscreen = false,
+  sideControls = false,
   onImmersiveChange,
 }: {
   fullscreen?: boolean;
+  /** альбомный режим: панель управления сбоку, слово на всю высоту */
+  sideControls?: boolean;
   /** true — интерфейс скрыт, остался только текст (иммерсивный режим) */
   onImmersiveChange?: (immersive: boolean) => void;
 } = {}) {
@@ -43,10 +46,15 @@ export function ReaderView({
   const restart = useReaderStore((s) => s.restart);
 
   const [controlsVisible, setControlsVisible] = useState(true);
+  const { width: winW, height: winH } = useWindowDimensions();
+  const isLandscape = winW > winH;
   const fade = useRef(new Animated.Value(1)).current;
   const [wpmDraft, setWpmDraft] = useState<number | null>(null);
   const finished = engineState === 'finished';
   const playing = engineState === 'playing';
+  const [wordAreaH, setWordAreaH] = useState(600);
+  // шрифт не выше 60% высоты области слова — не обрезается ни в портрете, ни в альбоме
+  const effFontSize = Math.min(settings.fontSize, Math.floor(wordAreaH * 0.6));
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const controlsVisibleRef = useRef(true);
   // «барабан»: слово следует за пальцем при свайпе и плавно сменяется
@@ -84,12 +92,12 @@ export function ReaderView({
 
   useEffect(() => {
     if (playing) scheduleHide();
-    else {
+    else if (!isLandscape) {
       if (hideTimer.current) clearTimeout(hideTimer.current);
       if (!controlsVisible) setControls(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing]);
+  }, [playing, isLandscape]);
 
   useEffect(
     () => () => {
@@ -196,11 +204,12 @@ export function ReaderView({
   if (!engine || size === 0) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, flexDirection: sideControls ? 'row' : 'column' }}>
       {/* Слово: жесты (свайп-перемотка / свайп-размер) живут на родителе,
           чтобы перехватывать движение до Pressable */}
       <View
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        onLayout={(e) => setWordAreaH(e.nativeEvent.layout.height)}
         {...pan.panHandlers}
         accessibilityLabel={`${currentGlobal + 1}`}
       >
@@ -222,7 +231,7 @@ export function ReaderView({
             word={word}
             prevWords={prevWords}
             nextWords={nextWords}
-            fontSize={settings.fontSize}
+            fontSize={effFontSize}
             fontFamily={fontFamily}
             orpEnabled={settings.orpEnabled}
             textColor={settings.textColor}
@@ -243,7 +252,14 @@ export function ReaderView({
       </View>
 
       {/* Контролы: скрываются тапом мимо и сами через 10 секунд чтения */}
-      <Animated.View style={{ opacity: fade, pointerEvents: controlsVisible ? 'auto' : 'none' }}>
+      <Animated.View
+        style={[
+          sideControls
+            ? { width: 320, alignSelf: 'stretch', justifyContent: 'center', paddingHorizontal: 8 }
+            : null,
+          { opacity: fade, pointerEvents: controlsVisible ? 'auto' : 'none' },
+        ]}
+      >
           <View
             onTouchStart={() => bumpControls()}
             style={{
@@ -254,6 +270,7 @@ export function ReaderView({
               paddingHorizontal: 14,
               paddingTop: 10,
               paddingBottom: 12,
+              gap: 6,
             }}
           >
             {/* Кнопки */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { Animated, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -37,6 +37,7 @@ export function HomeScreen() {
   const sessions = useStatsStore((s) => s.sessions);
   const currentDocId = useSettingsStore((s) => s.settings.currentDocumentId);
   const readerBg = useSettingsStore((s) => s.settings.backgroundColor);
+  const isLandscape = useWindowDimensions().width > useWindowDimensions().height;
   const [immersive, setImmersive] = useState(false);
   const chromeFade = useRef(new Animated.Value(1)).current;
   const applyImmersive = (v: boolean) => {
@@ -121,7 +122,7 @@ export function HomeScreen() {
 
           {/* Живой RSVP-ридер */}
           <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 4, paddingBottom: insets.bottom + 12 }}>
-            <ReaderView onImmersiveChange={applyImmersive} />
+            <ReaderView sideControls={isLandscape} onImmersiveChange={applyImmersive} />
           </View>
         </>
       ) : (

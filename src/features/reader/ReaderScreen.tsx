@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated } from 'react-native';
+import { Animated, useWindowDimensions } from 'react-native';
 import { Pressable, StatusBar, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -39,6 +39,8 @@ export function ReaderScreen() {
   const finishedInfo = useReaderStore((s) => s.finishedInfo);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { width: winW, height: winH } = useWindowDimensions();
+  const landscape = winW > winH;
   const [immersive, setImmersive] = useState(false);
   const headerFade = useRef(new Animated.Value(1)).current;
   const applyImmersive = (v: boolean) => {
@@ -116,9 +118,15 @@ export function ReaderScreen() {
         />
       </Animated.View>
 
-      {/* Ридер */}
-      <View style={{ flex: 1, paddingHorizontal: 20, paddingBottom: insets.bottom + 14 }}>
-        <ReaderView fullscreen onImmersiveChange={applyImmersive} />
+      {/* Ридер: в альбомном — без боковых отступов и с панелью справа */}
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: landscape ? 4 : 20,
+          paddingBottom: landscape ? insets.bottom : insets.bottom + 14,
+        }}
+      >
+        <ReaderView fullscreen sideControls={landscape} onImmersiveChange={applyImmersive} />
       </View>
 
       {/* Диалог завершения */}
