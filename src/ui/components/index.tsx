@@ -739,6 +739,10 @@ export function AppTextInput({
   multiline,
   numberOfLines,
   style,
+  keyboardType,
+  autoCapitalize,
+  autoCorrect = true,
+  spellCheck = true,
 }: {
   value: string;
   onChangeText: (t: string) => void;
@@ -746,6 +750,10 @@ export function AppTextInput({
   multiline?: boolean;
   numberOfLines?: number;
   style?: StyleProp<ViewStyle>;
+  keyboardType?: 'default' | 'url' | 'email-address';
+  autoCapitalize?: 'none' | 'sentences';
+  autoCorrect?: boolean;
+  spellCheck?: boolean;
 }) {
   const { colors, radius } = useTheme();
   return (
@@ -756,6 +764,10 @@ export function AppTextInput({
       placeholderTextColor={colors.textTertiary}
       multiline={multiline}
       numberOfLines={numberOfLines}
+      keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
+      spellCheck={spellCheck}
       textAlignVertical={multiline ? 'top' : 'center'}
       style={[
         {

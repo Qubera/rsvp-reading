@@ -183,7 +183,15 @@ export function ImportScreen() {
       {/* URL-шид */}
       <Sheet visible={urlSheet} onClose={() => setUrlSheet(false)} title={t('import_web')}>
         <View style={{ gap: 14 }}>
-          <AppTextInput value={url} onChangeText={setUrl} placeholder={t('import_url_placeholder')} />
+          <AppTextInput
+            value={url}
+            onChangeText={setUrl}
+            placeholder={t('import_url_placeholder')}
+            keyboardType="url"
+            autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
+          />
           <Button label={t('import_button')} icon="globe-outline" onPress={doUrl} disabled={!url.trim()} />
         </View>
       </Sheet>
